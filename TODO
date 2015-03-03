@@ -1,0 +1,6 @@
+Welt als byte-Array => direkt modifizieren senden ohne Konvertierung
+Canvas besteht aus mehr Pixeln und ist quadratisch => onTouch-Events umrechnen
+
+Benötigt Methoden
+================
+	- X, Y in Canvas auf Welt-Index
