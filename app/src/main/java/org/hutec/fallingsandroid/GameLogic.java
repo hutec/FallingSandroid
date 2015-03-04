@@ -38,28 +38,7 @@ public class GameLogic extends Activity {
      * Constructor.
      */
     public  GameLogic() {
-        world = new byte[576];
-    }
-
-    //This method does the physics simulation and calculates next world configuration.
-    public void simulate() {
-
-        /**
-         * Sand mit freiem Weg => fallen in Gravitationsrichtung
-         * Sand auf anderem Sand auf Stein => aufeinanderfallen bis zum Gleichgewicht
-         * Sonderfall z.B U-Rohr => Druckkomponenten (abhängig von Haftreibung als Parameter)
-         *
-         * TODO Zeichengröße einstellbar
-         */
-        byte[] newWorld = new byte[576];
-        for (int i = 0; i < 576; i++) {
-            if (world[i] == SAND) {
-                ArrayList<Integer> possibleCells = findPossibleNeighbourCells(i);
-                int r = new Random().nextInt(possibleCells.size());
-                newWorld[r] = SAND;
-            }
-        }
-        System.arraycopy(newWorld, 0, world, 0, newWorld.length);
+        world = new byte[SIZE * SIZE];
     }
 
     public void draw(Canvas canvas) {
@@ -67,12 +46,11 @@ public class GameLogic extends Activity {
         paint.setColor(Color.WHITE);
         canvas.drawRect(0,0, canvas.getHeight(), canvas.getWidth(), paint);
 
-        for (int i = 0; i < 576; i++) {
+        for (int i = 0; i < SIZE * SIZE; i++) {
             byte cell = world[i];
             if (cell != 0) {
-                Log.d("Unequal zero", "yes");
-                int posX = i % 24;
-                int posY = i / 24;
+                int posX = i % SIZE;
+                int posY = i / SIZE;
                 switch (cell) {
                     case (byte) 0:
                         paint.setColor(Color.WHITE);
@@ -89,6 +67,36 @@ public class GameLogic extends Activity {
         }
     }
 
+    /**
+     * This method does the physics simulation and calculates next world configuration.
+     */
+    public void simulate() {
+        /**
+         * Sand mit freiem Weg => fallen in Gravitationsrichtung
+         * Sand auf anderem Sand auf Stein => aufeinanderfallen bis zum Gleichgewicht
+         * Sonderfall z.B U-Rohr => Druckkomponenten (abhängig von Haftreibung als Parameter)
+         *
+         * TODO Zeichengröße einstellbar
+         */
+        byte[] newWorld = new byte[SIZE * SIZE];
+        for (int i = 0; i < SIZE * SIZE; i++) {
+            if (world[i] == SAND) {
+                ArrayList<Integer> possibleCells = findPossibleNeighbourCells(i);
+                if (possibleCells.size() > 0) {
+                    int r = new Random().nextInt(possibleCells.size());
+                    //Log.d(Integer.toString(i), Integer.toString(r));
+                    newWorld[possibleCells.get(r)] = SAND;
+                } else {
+                    newWorld[i] = SAND;
+                }
+            }
+            if (world[i] == ROCK) {
+                newWorld[i] = ROCK;
+            }
+        }
+        System.arraycopy(newWorld, 0, world, 0, newWorld.length);
+    }
+
     private ArrayList<Integer> findPossibleNeighbourCells(int position) {
         ArrayList<Integer> possibleCells = new ArrayList<Integer>();
         /*if (position - SIZE - 1 > 0 && world[position - SIZE - 1] == 0) possibleCells.add(position - SIZE -1);
@@ -96,9 +104,9 @@ public class GameLogic extends Activity {
         if (position - SIZE + 1> 0 && world[position - SIZE + 1] == 0) possibleCells.add(position - SIZE + 1);
         if (position - 1 > 0 && world[position - 1] == 0) possibleCells.add(position - 1);
         if (position + 1 > 0 && world[position + 1] == 0) possibleCells.add(position + 1);*/
-        if (position + SIZE - 1 < 576 && world[position + SIZE - 1] == 0) possibleCells.add(position + SIZE - 1);
-        if (position + SIZE < 576 && world[position + SIZE] == 0) possibleCells.add(position + SIZE);
-        if (position + SIZE + 1 < 576 && world[position + SIZE + 1] == 0) possibleCells.add(position + SIZE +1);
+        if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == (byte) 0) possibleCells.add(position + SIZE - 1);
+        if (position + SIZE < SIZE * SIZE && world[position + SIZE] == (byte) 0) possibleCells.add(position + SIZE);
+        if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == (byte) 0) possibleCells.add(position + SIZE + 1);
 
         return possibleCells;
     }
@@ -108,7 +116,9 @@ public class GameLogic extends Activity {
      * @param x Position to add item
      */
     public void addParticle(int x) {
-        world[x] = currentItem;
+        if (x > 0 && x < SIZE * SIZE) {
+            world[x] = currentItem;
+        }
     }
 
     public void setCurrentItem(byte newItem) {
@@ -117,6 +127,10 @@ public class GameLogic extends Activity {
 
     public void setBlockSize(int size) {
         mBlockSize = size;
+    }
+
+    public int getSize() {
+        return SIZE;
     }
 
 }

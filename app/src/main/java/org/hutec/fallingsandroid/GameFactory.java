@@ -8,6 +8,7 @@ package org.hutec.fallingsandroid;
 public final class GameFactory {
     private static GameLogic mGame;
 
+
     public GameFactory() {}
 
     public static GameLogic getGameLogic() {

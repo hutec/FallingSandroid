@@ -53,8 +53,8 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
         //Start the display thread
         mDisplayThread.setRunning(true);
         mDisplayThread.start();
-        GameFactory.getGameLogic().setBlockSize(this.getWidth()/24);
-        mBlockSize = this.getWidth()/24;
+        GameFactory.getGameLogic().setBlockSize(this.getWidth()/GameFactory.getGameLogic().getSize());
+        mBlockSize = this.getWidth()/GameFactory.getGameLogic().getSize();
     }
 
     @Override
@@ -107,8 +107,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
 
         //Log.d(Integer.toString(worldPosX), Integer.toString(worldPosY));
 
-        GameFactory.getGameLogic().addParticle(worldPosY * 24 + worldPosX);
+        GameFactory.getGameLogic().addParticle(worldPosY * GameFactory.getGameLogic().getSize() + worldPosX);
 
+        //TODO use action_move to smooth lines
         /*switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mPath.moveTo(eventX, eventY);
