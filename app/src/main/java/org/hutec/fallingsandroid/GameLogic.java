@@ -1,7 +1,11 @@
 package org.hutec.fallingsandroid;
 
 import android.app.Activity;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -28,6 +32,8 @@ public class GameLogic extends Activity {
 
     public final int SIZE = 24;
 
+    private int mBlockSize;
+
     /**
      * Constructor.
      */
@@ -44,25 +50,43 @@ public class GameLogic extends Activity {
          * Sonderfall z.B U-Rohr => Druckkomponenten (abhängig von Haftreibung als Parameter)
          *
          * TODO Zeichengröße einstellbar
-         *
          */
-        findViewById(R.id.drawingView).setEnabled(false); //disable touch events during calculation
-
-        Thread simulation = new Thread() {
-
-            public void run() {
-                for (int i = 0; i < 576; i++) {
-                    if (world[i] == SAND) {
-                        ArrayList<Integer> possibleCells = findPossibleNeighbourCells(i);
-                        int r = new Random().nextInt(possibleCells.size());
-                        world[i] = 0;
-                    }
-                }
+        byte[] newWorld = new byte[576];
+        for (int i = 0; i < 576; i++) {
+            if (world[i] == SAND) {
+                ArrayList<Integer> possibleCells = findPossibleNeighbourCells(i);
+                int r = new Random().nextInt(possibleCells.size());
+                newWorld[r] = SAND;
             }
-        };
-        simulation.run();
+        }
+        System.arraycopy(newWorld, 0, world, 0, newWorld.length);
+    }
 
-        findViewById(R.id.drawingView).setEnabled(true);
+    public void draw(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        canvas.drawRect(0,0, canvas.getHeight(), canvas.getWidth(), paint);
+
+        for (int i = 0; i < 576; i++) {
+            byte cell = world[i];
+            if (cell != 0) {
+                Log.d("Unequal zero", "yes");
+                int posX = i % 24;
+                int posY = i / 24;
+                switch (cell) {
+                    case (byte) 0:
+                        paint.setColor(Color.WHITE);
+                        break;
+                    case (byte) 10:
+                        paint.setColor(Color.YELLOW);
+                        break;
+                    case (byte) 127:
+                        paint.setColor(Color.BLACK);
+                        break;
+                }
+                canvas.drawRect(posX * mBlockSize, posY * mBlockSize, (posX + 1) * mBlockSize, (posY + 1) * mBlockSize, paint);
+            }
+        }
     }
 
     private ArrayList<Integer> findPossibleNeighbourCells(int position) {
@@ -78,4 +102,21 @@ public class GameLogic extends Activity {
 
         return possibleCells;
     }
+
+    /**
+     * Adds currentItem to world array at position x
+     * @param x Position to add item
+     */
+    public void addParticle(int x) {
+        world[x] = currentItem;
+    }
+
+    public void setCurrentItem(byte newItem) {
+        currentItem = newItem;
+    }
+
+    public void setBlockSize(int size) {
+        mBlockSize = size;
+    }
+
 }

@@ -9,6 +9,9 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 
 /**
@@ -16,21 +19,12 @@ import android.view.View;
  *
  * Created by robin on 26.02.15.
  */
-public class DrawingView extends View {
-
+public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
     //drawing path
     private Path mPath;
 
     //used paint, e.g. thickness and color intensity of path
     private Paint mPaint;
-
-    //Canvas that is used to draw stuff
-    private Canvas mCanvas;
-
-    //canvas is converted to bitmap which is then displayed on this view
-    private Bitmap mBitmap;
-
-    private byte[] mWorld;
 
     //Side length in pixels of one block
     private int mBlockSize;
@@ -39,69 +33,50 @@ public class DrawingView extends View {
     private byte mCurrentItem;
 
     //holds game field and information
-    private GameLogic game;
+
+    private DisplayThread mDisplayThread;
 
     public DrawingView(Context context, AttributeSet attr) {
         super(context, attr);
-        setupDrawing();
-
-        //Start GameThread
-        
-    }
-
-    private void setupDrawing() {
-        //setup drawing area for interaction
-        mPath = new Path();
+        SurfaceHolder holder = getHolder();
+        holder.addCallback(this);
+        setFocusable(true);
         mPaint = new Paint();
-        mCanvas = new Canvas();
+        mPaint.setColor(Color.BLUE);
+        mDisplayThread = new DisplayThread(holder);
     }
 
-    /**
-     * Method used for drawing on the custom view.
-     *
-     * @param canvas
-     */
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        //canvas.drawPath(mPath, mPaint);
-        //Custom draw routine; iterate through world
-        for (int i = 0; i < 576; i++) {
-            byte cell = game.world[i];
-            if(cell != 0) {
-                int posX = i % 24;
-                int posY = i / 24;
-                switch (cell) {
-                    case (byte) 0:
-                        mPaint.setColor(Color.WHITE);
-                        break;
-                    case (byte) 10:
-                        mPaint.setColor(Color.YELLOW);
-                        break;
-                    case (byte) 127:
-                        mPaint.setColor(Color.BLACK);
-                        break;
-                }
-                canvas.drawRect(posX * mBlockSize, posY * mBlockSize, (posX + 1) * mBlockSize,(posY + 1) * mBlockSize ,  mPaint);
+
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        //Start the display thread
+        mDisplayThread.setRunning(true);
+        mDisplayThread.start();
+        GameFactory.getGameLogic().setBlockSize(this.getWidth()/24);
+        mBlockSize = this.getWidth()/24;
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int widthMeasureSpec, int heightMeasureSpec) {
+        /*int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int size = width > height ? height : width;
+        setMeasuredDimension(size, size);*/
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        boolean retry = true;
+        mDisplayThread.setRunning(false);
+        while(retry) {
+            try {
+                mDisplayThread.join();
+                retry = false;
+            } catch (InterruptedException e) {
 
             }
         }
-        //canvas.drawPath(mPath, mPaint);
-        //canvas.drawBitmap(mBitmap, 0, 0, mPaint);
-    }
-
-    /**
-     * Is called when view is first assigned a size and if the size changes.
-     * @param width
-     * @param height
-     * @param oldWidth
-     * @param oldHeight
-     */
-    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
-        super.onSizeChanged(width, height, oldWidth, oldHeight);
-        mBlockSize = height/24;
-        this.setBackgroundColor(Color.WHITE);
-        //mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        //mCanvas = new Canvas(mBitmap);
     }
 
     /**
@@ -130,9 +105,9 @@ public class DrawingView extends View {
         int worldPosX = (int) eventX/mBlockSize;
         int worldPosY = (int) eventY/mBlockSize;
 
-        Log.d(Integer.toString(worldPosX), Integer.toString(worldPosY));
+        //Log.d(Integer.toString(worldPosX), Integer.toString(worldPosY));
 
-        game.world[worldPosY * 24 + worldPosX] = game.currentItem;
+        GameFactory.getGameLogic().addParticle(worldPosY * 24 + worldPosX);
 
         /*switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -148,15 +123,11 @@ public class DrawingView extends View {
             default:
                 return false;
         }*/
-        invalidate(); //invalidates the view and thus calls onDraw()
         return true;
-    }
-
-    public void addGame(GameLogic game) {
-        this.game = game;
     }
 
     public void setPaintColor(int color) {
         mPaint.setColor(color);
     }
 }
+

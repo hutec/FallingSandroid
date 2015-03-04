@@ -58,15 +58,19 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        game = GameFactory.getGameLogic();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mDrawingView = (DrawingView) findViewById(R.id.drawingView);
+
         mRockButton = (Button) findViewById(R.id.btnRock);
         mRockButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                game.currentItem = game.ROCK;
+                game.setCurrentItem(game.ROCK);
                 mDrawingView.setPaintColor(Color.BLACK);
             }
         });
@@ -75,7 +79,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         mSandButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                game.currentItem = game.SAND;
+                game.setCurrentItem(game.SAND);
                 mDrawingView.setPaintColor(Color.YELLOW);
             }
         });
@@ -84,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         mEraseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                game.currentItem  = game.ERASE;
+                game.setCurrentItem(game.ERASE);
                 mDrawingView.setPaintColor(Color.WHITE);
             }
         });
@@ -94,13 +98,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                start(); //Start BT
-                game.simulate();
+                //start(); //Start BT
+                //game.simulate();
             }
         });
-
-        game = new GameLogic();
-        mDrawingView.addGame(game);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         Sensor accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -137,7 +138,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                     loop = false;
                 }
 
-                // Connected. Calculate and set send delay from maximum FPS.
+                // Connected. Calculate and set send delay from maximum FPS.kon
                 // Negative maxFPS should not happen.
                 int maxFPS = BT.getMaxFPS();
                 if (maxFPS > 0) {
@@ -208,7 +209,6 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -227,8 +227,6 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         super.onPause();
         mSensorManager.unregisterListener(this);
     }
-
-
 
     /**
      * Opens bluetooth connection.
