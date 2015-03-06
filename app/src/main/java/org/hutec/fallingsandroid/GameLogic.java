@@ -24,8 +24,8 @@ public class GameLogic extends Activity {
 
     //Delare elements here, directly use the intensity values for the CM
     public final byte ERASE = (byte) 0;
-    public final byte SAND =  (byte) 10;
-    public final byte ROCK = (byte) 127;
+    public final byte SAND =  (byte) 50;
+    public final byte ROCK = (byte) 255;
 
     public byte currentItem = SAND;
     public byte[] world;
@@ -52,13 +52,13 @@ public class GameLogic extends Activity {
                 int posX = i % SIZE;
                 int posY = i / SIZE;
                 switch (cell) {
-                    case (byte) 0:
+                    case ERASE:
                         paint.setColor(Color.WHITE);
                         break;
-                    case (byte) 10:
+                    case SAND:
                         paint.setColor(Color.YELLOW);
                         break;
-                    case (byte) 127:
+                    case ROCK:
                         paint.setColor(Color.BLACK);
                         break;
                 }
@@ -104,9 +104,9 @@ public class GameLogic extends Activity {
         if (position - SIZE + 1> 0 && world[position - SIZE + 1] == 0) possibleCells.add(position - SIZE + 1);
         if (position - 1 > 0 && world[position - 1] == 0) possibleCells.add(position - 1);
         if (position + 1 > 0 && world[position + 1] == 0) possibleCells.add(position + 1);*/
-        if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == (byte) 0) possibleCells.add(position + SIZE - 1);
-        if (position + SIZE < SIZE * SIZE && world[position + SIZE] == (byte) 0) possibleCells.add(position + SIZE);
-        if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == (byte) 0) possibleCells.add(position + SIZE + 1);
+        if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == 0) possibleCells.add(position + SIZE - 1);
+        if (position + SIZE < SIZE * SIZE && world[position + SIZE] == 0) possibleCells.add(position + SIZE);
+        if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == 0) possibleCells.add(position + SIZE + 1);
 
         return possibleCells;
     }

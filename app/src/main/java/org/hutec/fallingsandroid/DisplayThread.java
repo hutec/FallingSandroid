@@ -16,7 +16,9 @@ class DisplayThread extends Thread {
     private Paint mPaint;
     private GameLogic game;
 
-    private final long DELAY = 4;
+    private LEDMatrixBTConn mBT;
+
+    private final long DELAY = 10;
 
     public DisplayThread(SurfaceHolder surfaceHolder) {
 
@@ -39,9 +41,13 @@ class DisplayThread extends Thread {
                 synchronized (mSurfaceHolder) {
                     GameFactory.getGameLogic().simulate();
                     GameFactory.getGameLogic().draw(canvas);
+                    if (GameFactory.getBT() != null) {
+                        GameFactory.getBT().write(GameFactory.getGameLogic().world);
+                    }
                     //canvas.drawRect(0, 0, canvas.getWidth(),canvas.getHeight(), mPaint);
                 }
                 mSurfaceHolder.unlockCanvasAndPost(canvas);
+
             }
 
             try {

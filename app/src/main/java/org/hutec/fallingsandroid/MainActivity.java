@@ -232,12 +232,11 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
      * Opens bluetooth connection.
      */
     public void connectBluetooth() {
-        BT = new LEDMatrixBTConn(this, REMOTE_BT_DEVICE_NAME, X_SIZE, Y_SIZE, COLOR_MODE, APP_Name);
-
-        if(!BT.prepare() || !BT.checkIfDeviceIsPaired()) {
-            //mStartButton.setEnabled(true);
-            return;
-        }
+        BT = new LEDMatrixBTConn(this, REMOTE_BT_DEVICE_NAME, X_SIZE, Y_SIZE, COLOR_MODE, APP_NAME);
+        BT.prepare();
+        BT.checkIfDeviceIsPaired();
+        BT.connect();
+        GameFactory.setBT(BT);
     }
 
 
