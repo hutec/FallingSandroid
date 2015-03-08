@@ -24,11 +24,9 @@ class DisplayThread extends Thread {
 
         mSurfaceHolder = surfaceHolder;
         mPaint = new Paint();
+        mRun = true;
     }
 
-    public void setRunning(boolean run) {
-        mRun = run;
-    }
 
     public SurfaceHolder getSurfaceHolder() {
         return mSurfaceHolder;
@@ -56,5 +54,13 @@ class DisplayThread extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setRunning(boolean run) {
+        mRun = run;
+    }
+
+    public boolean isRunning() {
+        return mRun;
     }
 }

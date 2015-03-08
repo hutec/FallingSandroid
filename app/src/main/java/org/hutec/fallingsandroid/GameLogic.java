@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -22,13 +23,17 @@ public class GameLogic extends Activity {
      * add pressure model (propabilistic)
      */
 
-    //Delare elements here, directly use the intensity values for the CM
+    //Declare elements here, directly use the intensity values for the CM
     public final byte ERASE = (byte) 0;
     public final byte SAND =  (byte) 50;
     public final byte ROCK = (byte) 255;
 
     public byte currentItem = SAND;
-    public byte[] world;
+    public byte[] world, newWorld;
+
+    private boolean mGravity;
+
+    private boolean isPaused;
 
     public final int SIZE = 24;
 
@@ -37,8 +42,11 @@ public class GameLogic extends Activity {
     /**
      * Constructor.
      */
-    public  GameLogic() {
+    public  GameLogic()
+    {
         world = new byte[SIZE * SIZE];
+        mGravity = false;
+        isPaused = false;
     }
 
     public void draw(Canvas canvas) {
@@ -78,8 +86,11 @@ public class GameLogic extends Activity {
          *
          * TODO Zeichengröße einstellbar
          */
-        byte[] newWorld = new byte[SIZE * SIZE];
-        for (int i = 0; i < SIZE * SIZE; i++) {
+
+        if (isPaused) return;
+
+        newWorld = new byte[SIZE * SIZE];
+        for (int i = SIZE * SIZE - 1; i > 0; i--) {
             if (world[i] == SAND) {
                 ArrayList<Integer> possibleCells = findPossibleNeighbourCells(i);
                 if (possibleCells.size() > 0) {
@@ -104,9 +115,33 @@ public class GameLogic extends Activity {
         if (position - SIZE + 1> 0 && world[position - SIZE + 1] == 0) possibleCells.add(position - SIZE + 1);
         if (position - 1 > 0 && world[position - 1] == 0) possibleCells.add(position - 1);
         if (position + 1 > 0 && world[position + 1] == 0) possibleCells.add(position + 1);*/
-        if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == 0) possibleCells.add(position + SIZE - 1);
-        if (position + SIZE < SIZE * SIZE && world[position + SIZE] == 0) possibleCells.add(position + SIZE);
-        if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == 0) possibleCells.add(position + SIZE + 1);
+
+        if (position + SIZE < SIZE * SIZE && world[position + SIZE] == 0
+                && newWorld[position + SIZE] == 0) possibleCells.add(position + SIZE);
+
+
+        if (possibleCells.size() == 1) return possibleCells;
+
+        if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == 0
+                && newWorld[position + SIZE - 1] == 0
+                && world[position - 1] == 0) possibleCells.add(position + SIZE - 1);
+
+
+
+        if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == 0
+                && newWorld[position + SIZE + 1] == 0 && world[position + 1] == 0) possibleCells.add(position + SIZE + 1);
+
+
+
+        //Pressure simulation and avoid pyramides
+        if (position + SIZE - 2 < SIZE * SIZE && world[position + SIZE - 2] == 0
+                && newWorld[position + SIZE - 2] == 0
+                && world[position - 1] == 0) possibleCells.add(position + SIZE -2);
+
+        if (position + SIZE + 2 < SIZE * SIZE && world[position + SIZE + 2] == 0
+                && newWorld[position + SIZE + 2] == 0
+                && world[position + 1] == 0) possibleCells.add(position + SIZE +2);
+
 
         return possibleCells;
     }
@@ -121,6 +156,13 @@ public class GameLogic extends Activity {
         }
     }
 
+    /**
+     * Deletes all particles in the world
+     */
+    public void clear() {
+        Arrays.fill(world, (byte) 0);
+    }
+
     public void setCurrentItem(byte newItem) {
         currentItem = newItem;
     }
@@ -133,4 +175,19 @@ public class GameLogic extends Activity {
         return SIZE;
     }
 
+    public void toggleGravity() {
+        mGravity = !mGravity;
+    }
+
+    public boolean getGravity() {
+        return mGravity;
+    }
+
+    public void togglePaused() {
+        isPaused = !isPaused;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
 }

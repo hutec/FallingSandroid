@@ -45,6 +45,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private Button mRockButton;
     private Button mEraseButton;
     private Button mStartButton;
+    private Button mClearButton;
     private DrawingView mDrawingView;
     private TextView mTextView;
     //private int sendDelay; not used yet
@@ -58,10 +59,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        game = GameFactory.getGameLogic();
-
         super.onCreate(savedInstanceState);
+
+
+        game = GameFactory.getGameLogic(); //creates new GameLogic/Engine
         setContentView(R.layout.activity_main);
 
         mDrawingView = (DrawingView) findViewById(R.id.drawingView);
@@ -95,11 +96,32 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
 
         mStartButton = (Button) findViewById(R.id.btnStart);
+        if (GameFactory.getGameLogic().isPaused()) {
+            mStartButton.setBackgroundColor(Color.RED);
+            //mStartButton.setText("Start");
+        } else {
+            mStartButton.setBackgroundColor(Color.GREEN);
+            //mStartButton.setText("Stop");
+        }
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //start(); //Start BT
-                //game.simulate();
+                GameFactory.getGameLogic().togglePaused();
+                if (GameFactory.getGameLogic().isPaused()) {
+                    mStartButton.setBackgroundColor(Color.RED);
+                    //mStartButton.setText("Start");
+                } else {
+                    mStartButton.setBackgroundColor(Color.GREEN);
+                    //mStartButton.setText("Stop");
+                }
+            }
+        });
+
+        mClearButton = (Button) findViewById(R.id.btnClear);
+        mClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GameFactory.getGameLogic().clear();
             }
         });
 
@@ -109,10 +131,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     }
 
 
-    protected void onResume() {
-        super.onResume();
-        //mSensorManager.registerListener()
-    }
+
 
     /**
      * Opening BT conenction and sending data in a seperate thread.
@@ -210,6 +229,13 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem checkable = menu.findItem(R.id.action_gravity_check);
+        checkable.setChecked(GameFactory.getGameLogic().getGravity());
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -217,7 +243,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         switch  (item.getItemId()) {
             case R.id.action_bluetooth_connect:
                 connectBluetooth();
-
+            case R.id.action_gravity_check:
+                item.setChecked(!GameFactory.getGameLogic().getGravity());
+                GameFactory.getGameLogic().toggleGravity();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -229,14 +258,14 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     }
 
     /**
-     * Opens bluetooth connection.
+     * Opens bluetooth connection and adds .
      */
     public void connectBluetooth() {
         BT = new LEDMatrixBTConn(this, REMOTE_BT_DEVICE_NAME, X_SIZE, Y_SIZE, COLOR_MODE, APP_NAME);
-        BT.prepare();
-        BT.checkIfDeviceIsPaired();
-        BT.connect();
-        GameFactory.setBT(BT);
+        if(BT.prepare() && !BT.checkIfDeviceIsPaired()) {
+            BT.connect();
+            GameFactory.setBT(BT);
+        }
     }
 
 

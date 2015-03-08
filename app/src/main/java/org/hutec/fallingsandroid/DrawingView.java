@@ -44,15 +44,15 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
         mPaint = new Paint();
         mPaint.setColor(Color.BLUE);
         mDisplayThread = new DisplayThread(holder);
+        mDisplayThread.start();
     }
-
-
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         //Start the display thread
-        mDisplayThread.setRunning(true);
-        mDisplayThread.start();
+        if (!mDisplayThread.isRunning()) {
+            mDisplayThread.setRunning(true);
+        }
         GameFactory.getGameLogic().setBlockSize(this.getWidth()/GameFactory.getGameLogic().getSize());
         mBlockSize = this.getWidth()/GameFactory.getGameLogic().getSize();
     }

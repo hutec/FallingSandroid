@@ -4,7 +4,9 @@
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 
-    <item android:id="@+id/action_bluetooth_connect" android:title="Bluetooth verbinden">
-    </item>
-
+        <item android:id="@+id/action_bluetooth_connect" android:title="Bluetooth verbinden" />
+        <item
+            android:id="@+id/action_gravity_check"
+            android:checkable="true"
+            android:title="Gravitation aktivieren" />
 </menu>
