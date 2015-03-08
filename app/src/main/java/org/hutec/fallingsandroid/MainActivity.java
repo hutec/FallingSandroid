@@ -1,5 +1,6 @@
 package org.hutec.fallingsandroid;
 
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +43,9 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
 
     //UI elements
+    private EditText xText;
+    private EditText yText;
+
     private Button mSandButton;
     private Button mRockButton;
     private Button mEraseButton;
@@ -124,6 +129,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                 GameFactory.getGameLogic().clear();
             }
         });
+
+        xText = (EditText) findViewById(R.id.xText);
+        yText = (EditText) findViewById(R.id.yText);
+
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         Sensor accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -271,9 +280,20 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        /*if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            //mTextView.setText("" + event.values[0]);
-        }*/
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            xText.setText("" + event.values[0]);
+            yText.setText("" + event.values[1]);
+
+            float gravityX, gravityY;
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                gravityX = event.values[0];
+                gravityY = event.values[1];
+            } else {
+                gravityX =  - event.values[1];
+                gravityY = event.values[0];
+            }
+            GameFactory.getGameLogic().setGravity(gravityX, gravityY);
+        }
     }
 
     @Override

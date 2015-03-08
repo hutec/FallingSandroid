@@ -39,6 +39,10 @@ public class GameLogic extends Activity {
 
     private int mBlockSize;
 
+    private float gravityX, gravityY;
+
+
+
     /**
      * Constructor.
      */
@@ -120,30 +124,68 @@ public class GameLogic extends Activity {
                 && newWorld[position + SIZE] == 0) possibleCells.add(position + SIZE);
 
 
-        if (possibleCells.size() == 1) return possibleCells;
+        if (possibleCells.size() == 1 && Math.abs(gravityX) < 2) return possibleCells;
 
         if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == 0
                 && newWorld[position + SIZE - 1] == 0
-                && world[position - 1] == 0) possibleCells.add(position + SIZE - 1);
-
+                && world[position - 1] == 0
+                && position % SIZE > 0) possibleCells.add(position + SIZE - 1);
 
 
         if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == 0
-                && newWorld[position + SIZE + 1] == 0 && world[position + 1] == 0) possibleCells.add(position + SIZE + 1);
-
+                && newWorld[position + SIZE + 1] == 0
+                && world[position + 1] == 0
+                && position % SIZE < SIZE - 1) possibleCells.add(position + SIZE + 1);
 
 
         //Pressure simulation and avoid pyramides
         if (position + SIZE - 2 < SIZE * SIZE && world[position + SIZE - 2] == 0
                 && newWorld[position + SIZE - 2] == 0
-                && world[position - 1] == 0) possibleCells.add(position + SIZE -2);
+                && world[position - 1] == 0
+                && position % SIZE > 1) possibleCells.add(position + SIZE -2);
 
         if (position + SIZE + 2 < SIZE * SIZE && world[position + SIZE + 2] == 0
                 && newWorld[position + SIZE + 2] == 0
-                && world[position + 1] == 0) possibleCells.add(position + SIZE +2);
+                && world[position + 1] == 0
+                && position % SIZE < SIZE - 2) possibleCells.add(position + SIZE +2);
 
+        if (Math.abs(gravityX) > 2) {
+            if (gravityX < 2 && position + 1 < SIZE * SIZE && world[position + 1] == 0
+                    && position % SIZE < SIZE - 1) possibleCells.add(position + 1);
+
+            if (gravityX > -2 && position - 1 > 0 && world[position - 1] == 0
+                    && position % SIZE > 0) possibleCells.add(position - 1);
+
+        }
+
+        if (Math.abs(gravityX) > 4) {
+            if (gravityX < 4 && position + SIZE + 1 < SIZE * SIZE && world[position - SIZE + 1] == 0
+                    && world[position + 1] != 0
+                    && position % SIZE < SIZE - 1) possibleCells.add(position - SIZE + 1);
+
+            if (gravityX > -4 && position - SIZE - 1 > 0 && world[position - SIZE - 1] == 0
+                    && world[position - 1] != 0
+                    && position % SIZE > 0) possibleCells.add(position - SIZE - 1);
+        }
+
+
+        /*for (int i = 0; i < possibleCells.size(); i++) {
+            if (!(possibleCells.get(i) > position -  (position % 24) && possibleCells.get(i) < position - (position % 24) + 24)) {
+                possibleCells.remove(i);
+            }
+        }*/
 
         return possibleCells;
+    }
+
+    public void setGravity(float gravityX, float gravityY) {
+        if (mGravity) {
+            this.gravityX = gravityX;
+            this.gravityY = gravityY;
+        } else {
+            this.gravityX = 0f;
+            this.gravityY = 9.8f;
+        }
     }
 
     /**
