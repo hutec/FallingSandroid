@@ -277,7 +277,6 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         }
     }
 
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -285,12 +284,20 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             yText.setText("" + event.values[1]);
 
             float gravityX, gravityY;
+
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 gravityX = event.values[0];
                 gravityY = event.values[1];
             } else {
-                gravityX =  - event.values[1];
-                gravityY = event.values[0];
+
+                //Handle two possible landscape modes
+                if (event.values[0] > 0) {
+                    gravityX = -event.values[1];
+                    gravityY = event.values[0];
+                } else {
+                    gravityX = event.values[1];
+                    gravityY = event.values[0];
+                }
             }
             GameFactory.getGameLogic().setGravity(gravityX, gravityY);
         }
