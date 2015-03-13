@@ -53,6 +53,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     //Sensor manager that handles all the sensor devices, e.g. accelerometer
     private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
 
     public GameLogic game;
 
@@ -124,7 +125,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         });
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
 
@@ -263,6 +265,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     public void onResume() {
         super.onResume();
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mDrawingView.resume();
     }
 
@@ -300,27 +303,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            //xText.setText("" + event.values[0]);
-            //yText.setText("" + event.values[1]);
-
-            float gravityX, gravityY;
-
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                gravityX = event.values[0];
-                gravityY = event.values[1];
-            } else {
-                //Handle two possible landscape modes
-                if (event.values[0] > 0) {
-                    gravityX = -event.values[1];
-                    gravityY = event.values[0];
-                } else {
-                    gravityX = event.values[1];
-                    gravityY = event.values[0];
-                }
-            }
-            GameFactory.getGameLogic().setGravity(gravityX, gravityY);
-        }
+        Runnable sensorThread = new SensorThread(event, getResources().getConfiguration().orientation);
+        new Thread(sensorThread).start();
     }
 
     @Override

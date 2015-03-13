@@ -1,8 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
 
         <item android:id="@+id/action_bluetooth_connect" android:title="Bluetooth verbinden" />
         <item android:id="@+id/action_bluetooth_disconnect" android:title="Bluetooth trennen" />
@@ -11,9 +9,6 @@
             android:id="@+id/action_gravity_check"
             android:checkable="true"
             android:title="Gravitation aktivieren" />
-
-        <item android:id="@+id/action_close" android:title="Beenden" />
-
 
 
 </menu>
