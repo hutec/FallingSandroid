@@ -25,7 +25,7 @@ public class GameLogic extends Activity {
 
     //Declare elements here, directly use the intensity values for the CM
     public final byte ERASE = (byte) 0;
-    public final byte SAND =  (byte) 50;
+    public final byte SAND =  (byte) 100;
     public final byte ROCK = (byte) 255;
 
     public byte currentItem = SAND;
@@ -158,15 +158,15 @@ public class GameLogic extends Activity {
 
         }
 
-        if (Math.abs(gravityX) > 4) {
-            if (gravityX < 4 && position + SIZE + 1 < SIZE * SIZE && world[position - SIZE + 1] == 0
+        /*if (Math.abs(gravityX) > 4 && position < SIZE * SIZE - 1 && position > 0) {
+            if (gravityX < 4 && position - SIZE + 1 > 0 && world[position - SIZE + 1] == 0
                     && world[position + 1] != 0
                     && position % SIZE < SIZE - 1) possibleCells.add(position - SIZE + 1);
 
             if (gravityX > -4 && position - SIZE - 1 > 0 && world[position - SIZE - 1] == 0
                     && world[position - 1] != 0
                     && position % SIZE > 0) possibleCells.add(position - SIZE - 1);
-        }
+        }*/
 
 
         /*for (int i = 0; i < possibleCells.size(); i++) {

@@ -74,19 +74,5 @@
 
     </LinearLayout>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/xText"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/yText"
-        android:layout_below="@+id/xText"
-        android:layout_alignParentStart="true" />
-
 
 </RelativeLayout>

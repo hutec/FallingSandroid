@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity implements SensorEventListener{
@@ -43,17 +44,12 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
 
     //UI elements
-    private EditText xText;
-    private EditText yText;
-
     private Button mSandButton;
     private Button mRockButton;
     private Button mEraseButton;
     private Button mStartButton;
     private Button mClearButton;
     private DrawingView mDrawingView;
-    private TextView mTextView;
-    //private int sendDelay; not used yet
 
     //Sensor manager that handles all the sensor devices, e.g. accelerometer
     private SensorManager mSensorManager;
@@ -65,7 +61,6 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         game = GameFactory.getGameLogic(); //creates new GameLogic/Engine
         setContentView(R.layout.activity_main);
@@ -114,10 +109,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                 GameFactory.getGameLogic().togglePaused();
                 if (GameFactory.getGameLogic().isPaused()) {
                     mStartButton.setBackgroundColor(Color.RED);
-                    //mStartButton.setText("Start");
                 } else {
                     mStartButton.setBackgroundColor(Color.GREEN);
-                    //mStartButton.setText("Stop");
                 }
             }
         });
@@ -130,16 +123,9 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             }
         });
 
-        xText = (EditText) findViewById(R.id.xText);
-        yText = (EditText) findViewById(R.id.yText);
-
-
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        Sensor accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
     }
-
-
 
 
     /**
@@ -239,8 +225,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem checkable = menu.findItem(R.id.action_gravity_check);
-        checkable.setChecked(GameFactory.getGameLogic().getGravity());
+        MenuItem checkGravity = menu.findItem(R.id.action_gravity_check);
+        checkGravity.setChecked(GameFactory.getGameLogic().getGravity());
         return true;
     }
 
@@ -252,6 +238,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         switch  (item.getItemId()) {
             case R.id.action_bluetooth_connect:
                 connectBluetooth();
+                return true;
+            case R.id.action_bluetooth_disconnect:
+                disconnectBluetooth();
+                return true;
             case R.id.action_gravity_check:
                 item.setChecked(!GameFactory.getGameLogic().getGravity());
                 GameFactory.getGameLogic().toggleGravity();
@@ -263,25 +253,56 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
     public void onPause() {
         super.onPause();
+        //GameFactory.getBT().onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    public void onResume() {
+        super.onResume();
+        mDrawingView.resume();
     }
 
     /**
      * Opens bluetooth connection and adds .
      */
-    public void connectBluetooth() {
-        BT = new LEDMatrixBTConn(this, REMOTE_BT_DEVICE_NAME, X_SIZE, Y_SIZE, COLOR_MODE, APP_NAME);
-        if(BT.prepare() && !BT.checkIfDeviceIsPaired()) {
-            BT.connect();
-            GameFactory.setBT(BT);
+    private void connectBluetooth() {
+        if (GameFactory.getBT() != null) {
+            Toast.makeText(getApplicationContext(), "Bluetooth bereits verbunden", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Thread btOpener = new Thread() {
+            public void run() {
+                BT = new LEDMatrixBTConn(getApplicationContext(), REMOTE_BT_DEVICE_NAME, X_SIZE, Y_SIZE, COLOR_MODE, APP_NAME);
+                BT.prepare();
+                if (BT.checkIfDeviceIsPaired()) {
+                    BT.connect();
+                    GameFactory.setBT(BT);
+                };
+            }
+        };
+        btOpener.run();
+
+    }
+
+    private void disconnectBluetooth() {
+        if (GameFactory.getBT() != null) {
+            GameFactory.getBT().closeConnection();
+            GameFactory.setBT(null);
+            Toast.makeText(this.getApplicationContext(), "Bluetooth getrennt.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this.getApplicationContext(), "Es existiert keine Bluetooth-Verbindung.", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            xText.setText("" + event.values[0]);
-            yText.setText("" + event.values[1]);
+            //xText.setText("" + event.values[0]);
+            //yText.setText("" + event.values[1]);
 
             float gravityX, gravityY;
 
@@ -289,7 +310,6 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                 gravityX = event.values[0];
                 gravityY = event.values[1];
             } else {
-
                 //Handle two possible landscape modes
                 if (event.values[0] > 0) {
                     gravityX = -event.values[1];

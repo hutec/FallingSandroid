@@ -20,8 +20,6 @@ import android.view.View;
  * Created by robin on 26.02.15.
  */
 public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
-    //drawing path
-    private Path mPath;
 
     //used paint, e.g. thickness and color intensity of path
     private Paint mPaint;
@@ -29,10 +27,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
     //Side length in pixels of one block
     private int mBlockSize;
 
-    //Holds the type of the current item.
-    private byte mCurrentItem;
-
-    //holds game field and information
 
     private DisplayThread mDisplayThread;
 
@@ -45,6 +39,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
         mPaint.setColor(Color.BLUE);
         mDisplayThread = new DisplayThread(holder);
         mDisplayThread.start();
+        GameFactory.setDisplayThread(mDisplayThread);
     }
 
     @Override
@@ -55,6 +50,11 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
         }
         GameFactory.getGameLogic().setBlockSize(this.getWidth()/GameFactory.getGameLogic().getSize());
         mBlockSize = this.getWidth()/GameFactory.getGameLogic().getSize();
+    }
+
+    public void resume() {
+        mDisplayThread = new DisplayThread(getHolder());
+        mDisplayThread.start();
     }
 
     @Override
@@ -91,6 +91,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
         int size = width > height ? height : width;
         setMeasuredDimension(size, size);
     }
+
 
     /**
      * Handles touching events such as drawing lines and settings pixels.

@@ -5,8 +5,15 @@
         android:orderInCategory="100" app:showAsAction="never" />
 
         <item android:id="@+id/action_bluetooth_connect" android:title="Bluetooth verbinden" />
+        <item android:id="@+id/action_bluetooth_disconnect" android:title="Bluetooth trennen" />
+
         <item
             android:id="@+id/action_gravity_check"
             android:checkable="true"
             android:title="Gravitation aktivieren" />
+
+        <item android:id="@+id/action_close" android:title="Beenden" />
+
+
+
 </menu>

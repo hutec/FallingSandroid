@@ -141,7 +141,7 @@ public class LEDMatrixBTConn {
 	    * If mAddress is null, the device is not paired.
 	    */
         if (mAddress == null) {
-            Toast.makeText(mContext, "Device with name " + mRemoteBTDeviceName + " is not paired. Please pair first then restart the app.", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "Gerät mit dem Namen " + mRemoteBTDeviceName + " ist nicht gepaired. Bitte paire dich zuerst mit diesem Gerät und starte die App erneut.", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -174,6 +174,7 @@ public class LEDMatrixBTConn {
             }
         } catch (IOException e) {
             Log.e(LED_MATRIX_BT_CONN, "Failed to close socket!");
+            e.printStackTrace();
         }
     }
 

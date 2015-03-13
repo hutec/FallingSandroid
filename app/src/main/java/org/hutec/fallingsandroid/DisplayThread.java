@@ -14,19 +14,14 @@ class DisplayThread extends Thread {
     private boolean mRun = false;
     private DrawingView view;
     private Paint mPaint;
-    private GameLogic game;
 
-    private LEDMatrixBTConn mBT;
-
-    private final long DELAY = 10;
+    private final long mDelay = 10;
 
     public DisplayThread(SurfaceHolder surfaceHolder) {
-
         mSurfaceHolder = surfaceHolder;
         mPaint = new Paint();
         mRun = true;
     }
-
 
     public SurfaceHolder getSurfaceHolder() {
         return mSurfaceHolder;
@@ -45,11 +40,9 @@ class DisplayThread extends Thread {
                     //canvas.drawRect(0, 0, canvas.getWidth(),canvas.getHeight(), mPaint);
                 }
                 mSurfaceHolder.unlockCanvasAndPost(canvas);
-
             }
-
             try {
-                Thread.sleep(DELAY);
+                Thread.sleep(mDelay);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -63,4 +56,5 @@ class DisplayThread extends Thread {
     public boolean isRunning() {
         return mRun;
     }
+
 }

@@ -12,6 +12,8 @@ public final class GameFactory {
 
     private static LEDMatrixBTConn BT;
 
+    private static DisplayThread displayThread;
+
     protected static final String REMOTE_BT_DEVICE_NAME = "ledpi-teco";
 
     protected static final String APP_NAME ="fallingsandroid";
@@ -43,6 +45,14 @@ public final class GameFactory {
 
     public static LEDMatrixBTConn getBT() {
         return (BT != null) ? BT : null;
+    }
+
+    public static void setDisplayThread(DisplayThread thread) {
+        displayThread = thread;
+    }
+
+    public static DisplayThread getDisplayThread() {
+        return displayThread;
     }
 
 }
