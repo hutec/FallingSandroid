@@ -42,7 +42,7 @@
 
         <Button
             android:layout_height="wrap_content"
-            android:text="Erase"
+            android:text="Radierer"
             android:id="@+id/btnErase"
             android:layout_weight="0.3"
             android:layout_width="wrap_content" />
@@ -69,7 +69,6 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
-            android:text="Clear"
             android:src="@android:drawable/ic_notification_clear_all"
             android:id="@+id/btnClear"
             android:layout_alignParentStart="true"

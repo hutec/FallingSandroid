@@ -55,7 +55,7 @@ class DisplayThread extends Thread {
                 mSurfaceHolder.unlockCanvasAndPost(canvas);
             }
             try {
-                Thread.sleep(mDelay);
+                Thread.sleep(GameFactory.getDelay());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

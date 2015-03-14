@@ -194,6 +194,7 @@ public class GameLogic extends Activity {
      */
     public void addParticle(int x) {
         if (x > 0 && x < SIZE * SIZE) {
+            if (world[x] == ROCK && currentItem == SAND) return;
             world[x] = currentItem;
         }
     }

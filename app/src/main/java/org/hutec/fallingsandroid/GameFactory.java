@@ -17,6 +17,8 @@ public final class GameFactory {
 
     private static Activity activity;
 
+    private static  int delay = 10;
+
     protected static final String REMOTE_BT_DEVICE_NAME = "ledpi-teco";
 
     protected static final String APP_NAME ="fallingsandroid";
@@ -44,6 +46,11 @@ public final class GameFactory {
 
     public static void setBT(LEDMatrixBTConn bt) {
         BT = bt;
+        if (bt != null) {
+            delay = (int) (1000.0) / BT.getMaxFPS();
+        } else {
+            delay = 10;
+        }
     }
 
     public static LEDMatrixBTConn getBT() {
@@ -64,6 +71,10 @@ public final class GameFactory {
 
     public static void setActivity(Activity newActivity) {
         activity = newActivity;
+    }
+
+    public static int getDelay() {
+        return delay;
     }
 
 }

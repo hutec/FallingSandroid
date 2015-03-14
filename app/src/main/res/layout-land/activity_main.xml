@@ -77,7 +77,7 @@
 
         <Button
             android:layout_height="wrap_content"
-            android:text="Erase"
+            android:text="Radierer"
             android:id="@+id/btnErase"
             android:layout_weight="0.3"
             android:layout_width="fill_parent" />
