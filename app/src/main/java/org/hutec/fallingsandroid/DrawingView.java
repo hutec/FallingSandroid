@@ -102,6 +102,10 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback{
         float eventX = event.getX();
         float eventY = event.getY();
 
+        //Stops drags outside view
+        if (eventX > this.getWidth() || eventY > this.getWidth()
+            || eventX < 0 || eventY <0 )return false;
+
         //TODO check if rounding problems due to int casting
         int worldPosX = (int) eventX/mBlockSize;
         int worldPosY = (int) eventY/mBlockSize;

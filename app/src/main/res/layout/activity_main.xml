@@ -27,7 +27,7 @@
 
         <Button
             android:layout_height="wrap_content"
-            android:text="Rock"
+            android:text="Stein"
             android:id="@+id/btnRock"
             android:layout_weight="0.3"
             android:layout_width="wrap_content" />
