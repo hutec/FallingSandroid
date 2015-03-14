@@ -54,25 +54,44 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
+        android:id="@+id/controllButtons">
 
-        <Button
-            android:layout_width="fill_parent"
+        <ImageButton
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Start/Stop"
+            android:src="@android:drawable/ic_media_play"
             android:id="@+id/btnStart"
             android:layout_weight="0.5"
             android:layout_alignParentStart="true" />
 
-        <Button
-            android:layout_width="fill_parent"
+        <ImageButton
+            android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:text="Clear"
+            android:src="@android:drawable/ic_notification_clear_all"
             android:id="@+id/btnClear"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:elegantTextHeight="false" />
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/controllButtons">
+
+        <ToggleButton
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textOn="Neigung"
+            android:textOff="Neigung"
+            android:checked="false"
+            android:id="@+id/gravitationSwitch" />
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

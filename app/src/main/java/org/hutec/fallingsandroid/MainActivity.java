@@ -18,11 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 
 public class MainActivity extends ActionBarActivity implements SensorEventListener{
@@ -47,9 +51,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private Button mSandButton;
     private Button mRockButton;
     private Button mEraseButton;
-    private Button mStartButton;
-    private Button mClearButton;
+    private ImageButton mStartButton;
+    private ImageButton mClearButton;
     private DrawingView mDrawingView;
+    private ToggleButton mGravitySwitch;
 
     //Sensor manager that handles all the sensor devices, e.g. accelerometer
     private SensorManager mSensorManager;
@@ -64,6 +69,8 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
 
         game = GameFactory.getGameLogic(); //creates new GameLogic/Engine
+        GameFactory.setActivity(this);
+
         setContentView(R.layout.activity_main);
 
         mDrawingView = (DrawingView) findViewById(R.id.drawingView);
@@ -96,12 +103,15 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         });
 
 
-        mStartButton = (Button) findViewById(R.id.btnStart);
+        mStartButton = (ImageButton) findViewById(R.id.btnStart);
+        //This is done for startup
         if (GameFactory.getGameLogic().isPaused()) {
-            mStartButton.setBackgroundColor(Color.RED);
+            mStartButton.setImageResource(android.R.drawable.ic_media_pause);
+            //mStartButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
             //mStartButton.setText("Start");
         } else {
-            mStartButton.setBackgroundColor(Color.GREEN);
+            mStartButton.setImageResource(android.R.drawable.ic_media_play);
+            //mStartButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
             //mStartButton.setText("Stop");
         }
         mStartButton.setOnClickListener(new View.OnClickListener() {
@@ -109,14 +119,16 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             public void onClick(View v) {
                 GameFactory.getGameLogic().togglePaused();
                 if (GameFactory.getGameLogic().isPaused()) {
-                    mStartButton.setBackgroundColor(Color.RED);
+                    mStartButton.setImageResource(android.R.drawable.ic_media_pause);
+                    //mStartButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
                 } else {
-                    mStartButton.setBackgroundColor(Color.GREEN);
+                    mStartButton.setImageResource(android.R.drawable.ic_media_play);
+                    //mStartButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
                 }
             }
         });
 
-        mClearButton = (Button) findViewById(R.id.btnClear);
+        mClearButton = (ImageButton) findViewById(R.id.btnClear);
         mClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,9 +136,20 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             }
         });
 
+        mGravitySwitch = (ToggleButton) findViewById(R.id.gravitationSwitch);
+        mGravitySwitch.setChecked(GameFactory.getGameLogic().getGravity());
+        mGravitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mGravitySwitch.setChecked(!GameFactory.getGameLogic().getGravity());
+                GameFactory.getGameLogic().toggleGravity();
+            }
+        });
+
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+
     }
 
 
@@ -280,21 +303,22 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         Thread btOpener = new Thread() {
             public void run() {
                 BT = new LEDMatrixBTConn(getApplicationContext(), REMOTE_BT_DEVICE_NAME, X_SIZE, Y_SIZE, COLOR_MODE, APP_NAME);
-                BT.prepare();
+                if (!BT.prepare()) return;
                 if (BT.checkIfDeviceIsPaired()) {
                     BT.connect();
                     GameFactory.setBT(BT);
-                };
+                }
             }
         };
         btOpener.run();
-
     }
 
     private void disconnectBluetooth() {
         if (GameFactory.getBT() != null) {
-            GameFactory.getBT().closeConnection();
+            //First set null, so that DisplayThread has no problem and shows toast
+            LEDMatrixBTConn bt = GameFactory.getBT();
             GameFactory.setBT(null);
+            bt.closeConnection();
             Toast.makeText(this.getApplicationContext(), "Bluetooth getrennt.", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this.getApplicationContext(), "Es existiert keine Bluetooth-Verbindung.", Toast.LENGTH_SHORT).show();

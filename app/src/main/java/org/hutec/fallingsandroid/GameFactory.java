@@ -1,5 +1,6 @@
 package org.hutec.fallingsandroid;
 
+import android.app.Activity;
 import android.content.Context;
 
 /**
@@ -13,6 +14,8 @@ public final class GameFactory {
     private static LEDMatrixBTConn BT;
 
     private static DisplayThread displayThread;
+
+    private static Activity activity;
 
     protected static final String REMOTE_BT_DEVICE_NAME = "ledpi-teco";
 
@@ -53,6 +56,14 @@ public final class GameFactory {
 
     public static DisplayThread getDisplayThread() {
         return displayThread;
+    }
+
+    public static Activity getActivity() {
+        return activity;
+    }
+
+    public static void setActivity(Activity newActivity) {
+        activity = newActivity;
     }
 
 }

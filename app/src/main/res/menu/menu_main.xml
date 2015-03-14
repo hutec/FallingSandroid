@@ -8,7 +8,6 @@
         <item
             android:id="@+id/action_gravity_check"
             android:checkable="true"
-            android:title="Gravitation aktivieren" />
-
-
+            android:title="Gravitation aktivieren"
+            android:visible="false"/>
 </menu>
