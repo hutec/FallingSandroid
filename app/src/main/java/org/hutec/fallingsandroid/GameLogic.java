@@ -141,7 +141,7 @@ public class GameLogic extends Activity {
                 && newWorld[position + 1] == 0
                 && gravityX < -3
                 && possibleCells.size() < 2 && (Math.random() < (Math.abs(gravityX) / 10)
-                && position % SIZE < SIZE -1)) {
+                && position % SIZE < SIZE - 1)) {
 
             possibleCells.add(position + 1);
         }
@@ -153,6 +153,24 @@ public class GameLogic extends Activity {
                 && position % SIZE > 0) {
 
             possibleCells.add(position - 1);
+        }
+
+        if (possibleCells.size() < 2 && Math.random() < (Math.abs(gravityX) / 50)
+                && gravityX < -3
+                && position - SIZE + 1 > 0
+                && world[position - SIZE + 1] == 0
+                && newWorld[position - SIZE + 1] == 0
+                && position % SIZE < SIZE - 1) {
+            possibleCells.add(position - SIZE + 1);
+        }
+
+        if (possibleCells.size() < 2 && Math.random() < (Math.abs(gravityX) / 50)
+                && gravityX > 3
+                && position - SIZE - 1 > 0
+                && world[position - SIZE - 1] == 0
+                && newWorld[position - SIZE - 1] == 0
+                && position % SIZE > 0) {
+            possibleCells.add(position - SIZE - 1);
         }
 
         return possibleCells;
