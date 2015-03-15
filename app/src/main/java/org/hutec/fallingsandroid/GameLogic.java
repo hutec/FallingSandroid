@@ -99,7 +99,6 @@ public class GameLogic extends Activity {
                 ArrayList<Integer> possibleCells = findPossibleNeighbourCells(i);
                 if (possibleCells.size() > 0) {
                     int r = new Random().nextInt(possibleCells.size());
-                    //Log.d(Integer.toString(i), Integer.toString(r));
                     newWorld[possibleCells.get(r)] = SAND;
                 } else {
                     newWorld[i] = SAND;
@@ -114,66 +113,47 @@ public class GameLogic extends Activity {
 
     private ArrayList<Integer> findPossibleNeighbourCells(int position) {
         ArrayList<Integer> possibleCells = new ArrayList<Integer>();
-        /*if (position - SIZE - 1 > 0 && world[position - SIZE - 1] == 0) possibleCells.add(position - SIZE -1);
-        if (position - SIZE > 0 && world[position - SIZE] == 0) possibleCells.add(position - SIZE);
-        if (position - SIZE + 1> 0 && world[position - SIZE + 1] == 0) possibleCells.add(position - SIZE + 1);
-        if (position - 1 > 0 && world[position - 1] == 0) possibleCells.add(position - 1);
-        if (position + 1 > 0 && world[position + 1] == 0) possibleCells.add(position + 1);*/
 
         if (position + SIZE < SIZE * SIZE && world[position + SIZE] == 0
                 && newWorld[position + SIZE] == 0) possibleCells.add(position + SIZE);
-
 
         if (possibleCells.size() == 1 && Math.abs(gravityX) < 2) return possibleCells;
 
         if (position + SIZE - 1 < SIZE * SIZE && world[position + SIZE - 1] == 0
                 && newWorld[position + SIZE - 1] == 0
                 && world[position - 1] == 0
-                && position % SIZE > 0) possibleCells.add(position + SIZE - 1);
+                && position % SIZE > 0
+                && (world[position + SIZE] != 0 || gravityX > 2)) {
 
+            possibleCells.add(position + SIZE - 1);
+        }
 
         if (position + SIZE + 1 < SIZE * SIZE && world[position + SIZE + 1] == 0
                 && newWorld[position + SIZE + 1] == 0
                 && world[position + 1] == 0
-                && position % SIZE < SIZE - 1) possibleCells.add(position + SIZE + 1);
+                && position % SIZE < SIZE - 1
+                && (world[position + SIZE] != 0 || gravityX < -2)) {
 
-
-        //Pressure simulation and avoid pyramides
-        if (position + SIZE - 2 < SIZE * SIZE && world[position + SIZE - 2] == 0
-                && newWorld[position + SIZE - 2] == 0
-                && world[position - 1] == 0
-                && position % SIZE > 1) possibleCells.add(position + SIZE -2);
-
-        if (position + SIZE + 2 < SIZE * SIZE && world[position + SIZE + 2] == 0
-                && newWorld[position + SIZE + 2] == 0
-                && world[position + 1] == 0
-                && position % SIZE < SIZE - 2) possibleCells.add(position + SIZE +2);
-
-        if (Math.abs(gravityX) > 2) {
-            if (gravityX < 2 && position + 1 < SIZE * SIZE && world[position + 1] == 0
-                    && position % SIZE < SIZE - 1) possibleCells.add(position + 1);
-
-            if (gravityX > -2 && position - 1 > 0 && world[position - 1] == 0
-                    && position % SIZE > 0) possibleCells.add(position - 1);
-
+            possibleCells.add(position + SIZE + 1);
         }
 
-        /*if (Math.abs(gravityX) > 4 && position < SIZE * SIZE - 1 && position > 0) {
-            if (gravityX < 4 && position - SIZE + 1 > 0 && world[position - SIZE + 1] == 0
-                    && world[position + 1] != 0
-                    && position % SIZE < SIZE - 1) possibleCells.add(position - SIZE + 1);
+        if (position + 1 < SIZE * SIZE && world[position + 1] == 0
+                && newWorld[position + 1] == 0
+                && gravityX < -3
+                && possibleCells.size() < 2 && (Math.random() < (Math.abs(gravityX) / 10)
+                && position % SIZE < SIZE -1)) {
 
-            if (gravityX > -4 && position - SIZE - 1 > 0 && world[position - SIZE - 1] == 0
-                    && world[position - 1] != 0
-                    && position % SIZE > 0) possibleCells.add(position - SIZE - 1);
-        }*/
+            possibleCells.add(position + 1);
+        }
 
+        if (position - 1 > 0 && world[position -1 ] == 0
+                && newWorld[position - 1] == 0
+                && gravityX > 3
+                && possibleCells.size() < 2 && (Math.random() < (Math.abs(gravityX) / 10))
+                && position % SIZE > 0) {
 
-        /*for (int i = 0; i < possibleCells.size(); i++) {
-            if (!(possibleCells.get(i) > position -  (position % 24) && possibleCells.get(i) < position - (position % 24) + 24)) {
-                possibleCells.remove(i);
-            }
-        }*/
+            possibleCells.add(position - 1);
+        }
 
         return possibleCells;
     }

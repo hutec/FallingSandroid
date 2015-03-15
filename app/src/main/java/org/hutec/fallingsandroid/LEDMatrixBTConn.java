@@ -112,13 +112,13 @@ public class LEDMatrixBTConn {
 
         // Check if Bluetooth is available on the device.
         if (mBluetoothAdapter == null) {
-            Toast.makeText(mContext, "Bluetooth is not available on this device.", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "Es wurde kein Bluetooth-Adapter auf diesem Gerät gefunden.", Toast.LENGTH_LONG).show();
             return false;
         }
 
         // Check if Bluetooth is enabled on the device.
         if (!mBluetoothAdapter.isEnabled()) {
-            Toast.makeText(mContext, "Please enable your BT and re-run this program.", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "Aktiviere bitte Bluetooth und versuche erneut dich zu verbinden.", Toast.LENGTH_LONG).show();
             return false;
         }
 
