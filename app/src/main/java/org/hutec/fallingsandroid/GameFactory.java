@@ -1,7 +1,6 @@
 package org.hutec.fallingsandroid;
 
 import android.app.Activity;
-import android.content.Context;
 
 /**
  * Class used for project wide access to the same game logic instance.

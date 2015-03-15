@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -40,7 +36,6 @@ public class GameLogic extends Activity {
     private int mBlockSize;
 
     private float gravityX, gravityY;
-
 
 
     /**
@@ -158,6 +153,8 @@ public class GameLogic extends Activity {
         if (possibleCells.size() < 2 && Math.random() < (Math.abs(gravityX) / 50)
                 && gravityX < -3
                 && position - SIZE + 1 > 0
+                && position + 1 < SIZE * SIZE
+                && world[position + 1] != 0
                 && world[position - SIZE + 1] == 0
                 && newWorld[position - SIZE + 1] == 0
                 && position % SIZE < SIZE - 1) {
@@ -167,6 +164,7 @@ public class GameLogic extends Activity {
         if (possibleCells.size() < 2 && Math.random() < (Math.abs(gravityX) / 50)
                 && gravityX > 3
                 && position - SIZE - 1 > 0
+                && world[position - 1] != 0
                 && world[position - SIZE - 1] == 0
                 && newWorld[position - SIZE - 1] == 0
                 && position % SIZE > 0) {
